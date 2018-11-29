@@ -4,7 +4,7 @@ import '../support/bunting.css';
 
 class ManagePopokBertasbih extends Component {
 
-    state = { listPopok: [] }
+    state = { listPopok: [], idTabel: [] }
 
     componentDidMount() {
         this.getPopokList();
@@ -14,6 +14,7 @@ class ManagePopokBertasbih extends Component {
         axios.get('http://localhost:1997/popok')
         .then((res) => {
             this.setState({ listPopok: res.data })
+            console.log(this.state.listPopok)
         }).catch((err) => {
             console.log(err)
         })
@@ -46,20 +47,64 @@ class ManagePopokBertasbih extends Component {
         }
     }
 
+    onBtnEditText = (idNya) => {  
+        this.setState({ idTabel: idNya })   
+    }
+
+    //SAVE
+    onBtnSaveClick = (id) => {
+        var nama = this.refs.namaSAVE.value;
+        var merk = this.refs.merkSAVE.value;
+        var harga = this.refs.hargaSAVE.value;
+        var img = this.refs.imgSAVE.value;
+        var description = this.refs.descSAVE.value;
+
+        axios.put('http://localhost:1997/popok/' + id, {
+            nama, merk, harga, img, description
+        }).then((res) => {
+            this.setState({idTabel:0})
+            this.getPopokList();
+            // console.log('masuk')
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    //Cancel
+    onCancel = () => {  
+        this.setState({ idTabel: 0 })   
+    }
+
     renderBodyPopok = () => {
-        var listJSXPopok = this.state.listPopok.map(({ id, nama, merk, description, harga, img}) => {
-            return (
-                <tr>
-                    <td>{id}</td>
-                    <td>{nama}</td>
-                    <td>{merk}</td>
-                    <td>{harga}</td>
-                    <td><img src={img} width="50px" alt={id}/></td>
-                    <td>{description}</td>
-                    <td><input className="btn btn-primary" type="button" value="Edit" /></td>
-                    <td><input className="btn btn-danger" type="button" value="Delete" onClick={() => this.onBtnDeleteClick(id)} /></td>
-                </tr>
-            )
+        var listJSXPopok = this.state.listPopok.map(({ id, nama, merk, description, harga, img }) => {
+            // console.log(`${this.state.idTabel} --- ${id}`)
+            if(this.state.idTabel === id){
+                return (
+                    <tr>
+                        <td>{id}</td>
+                        <td><input ref="namaSAVE" type="text" placeholder={nama} /></td>
+                        <td><input ref="merkSAVE" type="text" placeholder={merk} /></td>
+                        <td><input ref="hargaSAVE" type="text" placeholder={harga} /></td>
+                        <td><input ref="imgSAVE" type="text" placeholder={img} /></td>
+                        <td><textarea ref="descSAVE" placeholder={description}></textarea></td>
+                        <td><input className="btn btn-success" type="button" value="Save" onClick={() => this.onBtnSaveClick(id)}/></td>
+                        <td><input className="btn btn-danger" type="button" value="Cancel" onClick={this.onCancel}/></td>
+                    </tr>
+                )
+            }else{
+                return (
+                    <tr>
+                        <td>{id}</td>
+                        <td>{nama}</td>
+                        <td>{merk}</td>
+                        <td>{harga}</td>
+                        <td><img src={img} width="50px" alt={id}/></td>
+                        <td>{description}</td>
+                        <td><input className="btn btn-primary" type="button" value="Edit" onClick={() => this.onBtnEditText(id)}/></td>
+                        <td><input className="btn btn-danger" type="button" value="Delete" onClick={() => this.onBtnDeleteClick(id)} /></td>
+                    </tr>
+                )
+            }
         })
         return listJSXPopok;
     }
