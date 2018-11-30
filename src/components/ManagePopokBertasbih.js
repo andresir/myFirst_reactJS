@@ -4,7 +4,7 @@ import '../support/bunting.css';
 
 class ManagePopokBertasbih extends Component {
 
-    state = { listPopok: [], idTabel: [] }
+    state = { listPopok: [], idTabel: 0 }
 
     componentDidMount() {
         this.getPopokList();
@@ -13,7 +13,7 @@ class ManagePopokBertasbih extends Component {
     getPopokList = () => {
         axios.get('http://localhost:1997/popok')
         .then((res) => {
-            this.setState({ listPopok: res.data })
+            this.setState({ listPopok: res.data, idTabel: 0 })
             console.log(this.state.listPopok)
         }).catch((err) => {
             console.log(err)
@@ -62,7 +62,7 @@ class ManagePopokBertasbih extends Component {
         axios.put('http://localhost:1997/popok/' + id, {
             nama, merk, harga, img, description
         }).then((res) => {
-            this.setState({idTabel:0})
+            //this.setState({idTabel:0})
             this.getPopokList();
             // console.log('masuk')
         }).catch((err) => {
@@ -82,11 +82,19 @@ class ManagePopokBertasbih extends Component {
                 return (
                     <tr>
                         <td>{id}</td>
-                        <td><input ref="namaSAVE" type="text" placeholder={nama} /></td>
-                        <td><input ref="merkSAVE" type="text" placeholder={merk} /></td>
-                        <td><input ref="hargaSAVE" type="text" placeholder={harga} /></td>
-                        <td><input ref="imgSAVE" type="text" placeholder={img} /></td>
-                        <td><textarea ref="descSAVE" placeholder={description}></textarea></td>
+                        <td><input ref="namaSAVE" type="text" defaultValue={nama} /></td>
+
+                        <select ref="merkSAVE" defaultValue={merk}>
+                            <option>Bronson</option>
+                            <option>Uchiha</option>
+                            <option>Bunting</option>
+                        </select>
+
+                        {/* <td><input ref="merkSAVE" type="text" defaultValue={merk} /></td> */}
+                        
+                        <td><input ref="hargaSAVE" type="text" defaultValue={harga} /></td>
+                        <td><input ref="imgSAVE" type="text" defaultValue={img} /></td>
+                        <td><textarea ref="descSAVE" defaultValue={description}></textarea></td>
                         <td><input className="btn btn-success" type="button" value="Save" onClick={() => this.onBtnSaveClick(id)}/></td>
                         <td><input className="btn btn-danger" type="button" value="Cancel" onClick={this.onCancel}/></td>
                     </tr>
